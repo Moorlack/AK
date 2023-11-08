@@ -1,0 +1,19 @@
+cd ~/repos/busybox
+cd _install
+find . | cpio -o -H newc | gzip > ../rootfs.cpio.gz
+cd ..
+
+export ARCH=arm
+export PATH=/opt/gcc-arm-8.3-2019.03-x86_64-arm-linux-gnueabihf/bin:$PATH
+export CROSS_COMPILE="ccache arm-linux-gnueabihf-"
+export KDIR=$HOME/repos/linux-stable
+
+$KDIR/scripts/checkpatch.pl -f hello.c
+
+qemu-system-arm -kernel _install/boot/zImage -initrd rootfs.cpio.gz \
+-machine virt -nographic -m 512 \
+--append "root=/dev/ram0 rw console=ttyAMA0,115200 mem=512M"
+
+cp hello.ko ~/repos/busybox/_install
+
+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
